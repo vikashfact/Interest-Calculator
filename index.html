@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interest Calculator</title>
+  <style>
+    /* CSS Styling */
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #333;
+      padding: 1rem;
+    }
+
+    .calculator-container {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      transition: background 0.3s ease, color 0.3s ease;
+      position: relative;
+    }
+
+    .calculator-container.dark-mode {
+      background: #2c3e50;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.75rem;
+      color: black;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    .calculator-container.dark-mode h1 {
+      color: white;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .calculator-container.dark-mode input {
+      background: #34495e;
+      border-color: #444;
+      color: #fff;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      background: #2575fc;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-bottom: 1rem;
+    }
+
+    button:hover {
+      background: #1a5bbf;
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      text-align: left;
+    }
+
+    .result h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .result p {
+      margin: 0.5rem 0;
+    }
+
+    #total-principal,
+    #total-interest,
+    #total-amount {
+      font-weight: bold;
+      color: #2575fc;
+    }
+
+    .calculator-container.dark-mode #total-principal,
+    .calculator-container.dark-mode #total-interest,
+    .calculator-container.dark-mode #total-amount {
+      color: #6a11cb;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .dark-mode-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .language-select {
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #fff;
+      font-size: 1rem;
+      transition: background 0.3s ease, border-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .calculator-container.dark-mode .language-select {
+      background: #34495e;
+      border-color: #444;
+      color: #fff;
+    }
+
+    .transaction-history {
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .transaction-history h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2575fc;
+      color: white;
+    }
+
+    .calculator-container.dark-mode th {
+      background-color: #6a11cb;
+    }
+
+    .print-button {
+      background-color: #28a745;
+    }
+
+    .print-button:hover {
+      background-color: #218838;
+    }
+
+    /* Media Queries for Mobile Responsiveness */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .result h2 {
+        font-size: 1.25rem;
+      }
+
+      .transaction-history h2 {
+        font-size: 1.25rem;
+      }
+
+      th, td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      button {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+      }
+
+      .language-select {
+        font-size: 0.9rem;
+      }
+
+      .controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HTML Structure -->
+  <div class="calculator-container">
+    <!-- Controls Section -->
+    <div class="controls">
+      <div class="dark-mode-toggle">
+        <label for="dark-mode" id="dark-mode-label">Dark Mode:</label>
+        <input type="checkbox" id="dark-mode">
+      </div>
+      <select class="language-select" id="language-select">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+      </select>
+    </div>
+
+    <h1 id="app-title">INTEREST CALCULATOR</h1>
+    <div class="input-group">
+      <label for="principal" id="principal-label">Principal Amount (₹):</label>
+      <input type="number" id="principal" placeholder="Enter principal amount">
+    </div>
+    <div class="input-group">
+      <label for="rate" id="rate-label">Interest Rate (%):</label>
+      <input type="number" id="rate" placeholder="Enter interest rate">
+    </div>
+    <div class="input-group">
+      <label for="time" id="time-label">Time (Months):</label>
+      <input type="number" id="time" placeholder="Enter time in Months">
+    </div>
+    <button id="calculate-btn">Calculate Interest</button>
+    <div class="result">
+      <h2>Results</h2>
+      <p>Total Principal: <span id="total-principal">₹0.00</span></p>
+      <p>Total Interest: <span id="total-interest">₹0.00</span></p>
+      <p>Total Amount: <span id="total-amount">₹0.00</span></p>
+    </div>
+    <div class="transaction-history">
+      <h2>Transaction History</h2>
+      <table id="history-table">
+        <thead>
+          <tr>
+            <th>Principal (₹)</th>
+            <th>Rate (%)</th>
+            <th>Time (Months)</th>
+            <th>Interest (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Rows will be added dynamically -->
+        </tbody>
+      </table>
+      <button id="print-button" class="print-button">Print Total Result</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // Language Translations
+    const translations = {
+      en: {
+        title: "INTEREST CALCULATOR",
+        principal: "Principal Amount (₹):",
+        rate: "Interest Rate (%):",
+        time: "Time (Months):",
+        calculate: "Calculate Interest",
+        result: "Results",
+        totalPrincipal: "Total Principal:",
+        totalInterest: "Total Interest:",
+        totalAmount: "Total Amount:",
+        darkMode: "Dark Mode:",
+        history: "Transaction History",
+        print: "Print Total Result",
+      },
+      hi: {
+        title: "ब्याज कैलकुलेटर",
+        principal: "मूल राशि (₹):",
+        rate: "ब्याज दर (%):",
+        time: "समय (माह):",
+        calculate: "ब्याज की गणना करें",
+        result: "परिणाम",
+        totalPrincipal: "कुल मूल राशि:",
+        totalInterest: "कुल ब्याज:",
+        totalAmount: "कुल राशि:",
+        darkMode: "डार्क मोड:",
+        history: "लेन-देन इतिहास",
+        print: "कुल परिणाम प्रिंट करें",
+      },
+    };
+
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById("dark-mode");
+    const calculatorContainer = document.querySelector(".calculator-container");
+
+    darkModeToggle.addEventListener("change", function () {
+      calculatorContainer.classList.toggle("dark-mode", this.checked);
+    });
+
+    // Language Change
+    const languageSelect = document.getElementById("language-select");
+    languageSelect.addEventListener("change", function () {
+      const lang = this.value;
+      updateLanguage(lang);
+    });
+
+    function updateLanguage(lang) {
+      document.getElementById("app-title").textContent = translations[lang].title;
+      document.getElementById("principal-label").textContent = translations[lang].principal;
+      document.getElementById("rate-label").textContent = translations[lang].rate;
+      document.getElementById("time-label").textContent = translations[lang].time;
+      document.getElementById("calculate-btn").textContent = translations[lang].calculate;
+      document.querySelector(".result h2").textContent = translations[lang].result;
+      document.getElementById("total-principal").previousSibling.textContent = translations[lang].totalPrincipal;
+      document.getElementById("total-interest").previousSibling.textContent = translations[lang].totalInterest;
+      document.getElementById("total-amount").previousSibling.textContent = translations[lang].totalAmount;
+      document.getElementById("dark-mode-label").textContent = translations[lang].darkMode;
+      document.querySelector(".transaction-history h2").textContent = translations[lang].history;
+      document.getElementById("print-button").textContent = translations[lang].print;
+    }
+
+    // Transaction History
+    let transactions = [];
+
+    // Interest Calculation
+    document.getElementById("calculate-btn").addEventListener("click", function () {
+      const principal = parseFloat(document.getElementById("principal").value);
+      const rate = parseFloat(document.getElementById("rate").value);
+      const time = parseFloat(document.getElementById("time").value);
+
+      if (isNaN(principal) || isNaN(rate) || isNaN(time)) {
+        alert("Please enter valid numbers in all fields.");
+        return;
+      }
+
+      const interest = (principal * rate * time) / 100;
+
+      // Add transaction to history
+      transactions.push({ principal, rate, time, interest });
+
+      // Update transaction history table
+      updateHistoryTable();
+
+      // Update total results
+      updateTotalResults();
+
+      // Clear input fields
+      document.getElementById("principal").value = "";
+      document.getElementById("rate").value = "";
+      document.getElementById("time").value = "";
+    });
+
+    function updateHistoryTable() {
+      const tbody = document.querySelector("#history-table tbody");
+      tbody.innerHTML = ""; // Clear existing rows
+
+      transactions.forEach((transaction) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>₹${transaction.principal.toFixed(2)}</td>
+          <td>${transaction.rate.toFixed(2)}%</td>
+          <td>${transaction.time.toFixed(2)}</td>
+          <td>₹${transaction.interest.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function updateTotalResults() {
+      const totalPrincipal = transactions.reduce((sum, transaction) => sum + transaction.principal, 0);
+      const totalInterest = transactions.reduce((sum, transaction) => sum + transaction.interest, 0);
+      const totalAmount = totalPrincipal + totalInterest;
+
+      document.getElementById("total-principal").textContent = `₹${totalPrincipal.toFixed(2)}`;
+      document.getElementById("total-interest").textContent = `₹${totalInterest.toFixed(2)}`;
+      document.getElementById("total-amount").textContent = `₹${totalAmount.toFixed(2)}`;
+    }
+
+    // Print Total Result
+    document.getElementById("print-button").addEventListener("click", function () {
+      const totalPrincipal = transactions.reduce((sum, transaction) => sum + transaction.principal, 0);
+      const totalInterest = transactions.reduce((sum, transaction) => sum + transaction.interest, 0);
+      const totalAmount = totalPrincipal + totalInterest;
+
+      const printContent = `
+        <h1>Total Results</h1>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th style="padding: 0.75rem; border: 1px solid #ddd; background-color: #2575fc; color: white;">Total Principal</th>
+              <th style="padding: 0.75rem; border: 1px solid #ddd; background-color: #2575fc; color: white;">Total Interest</th>
+              <th style="padding: 0.75rem; border: 1px solid #ddd; background-color: #2575fc; color: white;">Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: center;">₹${totalPrincipal.toFixed(2)}</td>
+              <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: center;">₹${totalInterest.toFixed(2)}</td>
+              <td style="padding: 0.75rem; border: 1px solid #ddd; text-align: center;">₹${totalAmount.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    });
+  </script>
+</body>
+</html>
